@@ -39,23 +39,29 @@ const schoolsData = [
   // 可以继续添加更多学校数据...
 ]
 
+// 定义聊天记录的类型
+interface ChatEntry {
+  message: string;
+  response: string;
+}
+
 export function SchoolSelectorComponent() {
   const [input, setInput] = useState('')
-  const [chatHistory, setChatHistory] = useState([])
+  const [chatHistory, setChatHistory] = useState<ChatEntry[]>([])
   const [schools, setSchools] = useState(schoolsData)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (input.trim() === '') return
 
     // 这里应该是调用AI API的地方，现在我们只是模拟一个响应
     const aiResponse = "根据您的需求，我建议您考虑以下学校：Nanyang Primary School 和 Tao Nan School。这两所学校都是特选学校，位于不错的地段，并且有一些空余学额。"
 
-    setChatHistory([...chatHistory, { user: input, ai: aiResponse }])
+    setChatHistory([...chatHistory, { message: input, response: aiResponse }])
     setInput('')
 
     // 模拟根据AI响应过滤学校列表
-    setSchools(schools.filter(school => 
+    setSchools((prevSchools) => prevSchools.filter(school =>
       school.name === "Nanyang Primary School" || school.name === "Tao Nan School"
     ))
   }
@@ -73,8 +79,8 @@ export function SchoolSelectorComponent() {
             <ScrollArea className="h-[300px] w-full rounded-md border p-4">
               {chatHistory.map((chat, index) => (
                 <div key={index} className="mb-4">
-                  <p className="font-semibold">你: {chat.user}</p>
-                  <p className="text-muted-foreground">AI: {chat.ai}</p>
+                  <p className="font-semibold">你: {chat.message}</p>
+                  <p className="text-muted-foreground">AI: {chat.response}</p>
                 </div>
               ))}
             </ScrollArea>
